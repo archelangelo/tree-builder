@@ -1,5 +1,6 @@
-var nodeSize, nodePadding, levelHeight;
+var nodeSize, nodePadding, levelHeight, treeHeight, leftBound, rightBound;
 var root;
+var myCamera;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -7,7 +8,11 @@ function setup() {
     nodeSize = 10.;
     nodePadding = 4.;
     levelHeight = nodeSize + 2*nodePadding;
-    root = new Node(windowWidth/2., nodeSize/2. + nodePadding, null);
+    treeHeight = nodeSize*2 + nodePadding*3;
+    leftBound = -(1.5 * nodeSize + 2 * nodePadding);
+    rightBound = -leftBound;
+    rightBound = 1.;
+    root = new Node(0., nodePadding + nodeSize/2., null);
     root.left = new Node(root.x - (nodeSize + nodePadding), root.y + levelHeight, root);
     root.right = new Node(root.x + (nodeSize + nodePadding), root.y + levelHeight, root);
     myCamera = new Camera();
@@ -38,9 +43,9 @@ class Node {
             this.right.display();
         }
         if (this.parent != null) {
-            line(this.x, this.y, this.parent.x, this.parent.y);
+            myCamera.line(this.x, this.y, this.parent.x, this.parent.y);
         }
-        ellipse(this.x, this.y, nodeSize, nodeSize);
+        myCamera.ellipse(this.x, this.y, nodeSize, nodeSize);
     }
 
     // Calculate and adjust the sizes and positions of this node and the subtree under it
@@ -57,7 +62,7 @@ class Node {
 }
 
 // Draw objects through the lens of this camera
-// Support zoom and automatically adjust the size
+// Support zoom and automatically adjust the size to fit all nodes
 class Camera {
     constructor() {
         this.x = 0.;
@@ -65,9 +70,30 @@ class Camera {
         this.scale = 1.;
     }
 
+    // Update the scale of the camera
+    updateScale() {
+        this.scale = Math.min(1.*height/treeHeight, 1.*width/(rightBound-leftBound));
+        this.x = width/2. - (rightBound+leftBound)/2.*this.scale;
+        this.y = 0;
+    }
+
     // Draw an ellipse
-    ellipse(x, y, w, h) {}
+    ellipse(x, y, w, h) {
+        this.updateScale();
+        let x_p = x * this.scale + this.x;
+        let y_p = y * this.scale + this.y;
+        let w_p = w * this.scale;
+        let h_p = h * this.scale;
+        ellipse(x_p, y_p, w_p, h_p);
+    }
 
     // Draw a line
-    line(x1, y1, x2, y2) {}
+    line(x1, y1, x2, y2) {
+        this.updateScale();
+        let x1_p = x1 * this.scale + this.x;
+        let y1_p = y1 * this.scale + this.y;
+        let x2_p = x2 * this.scale + this.x;
+        let y2_p = y2 * this.scale + this.y;
+        line(x1_p, y1_p, x2_p, y2_p);
+    }
 }
