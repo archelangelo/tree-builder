@@ -1,4 +1,4 @@
-var nodeSize, nodePadding, levelHeight, treeHeight, leftBound, rightBound;
+var nodeSize, nodePadding, levelHeight, treeHeight = 0., leftBound = 0., rightBound = 0.;
 var root;
 var myCamera;
 
@@ -8,24 +8,27 @@ function setup() {
     nodeSize = 10.;
     nodePadding = 4.;
     levelHeight = nodeSize + 2*nodePadding;
-    treeHeight = nodeSize*2 + nodePadding*3;
-    leftBound = -(1.5 * nodeSize + 2 * nodePadding);
-    rightBound = -leftBound;
-    root = new Node(0., nodePadding + nodeSize/2., null);
-    root.left = new Node(root.x - (nodeSize + nodePadding), root.y + levelHeight, root);
-    root.right = new Node(root.x + (nodeSize + nodePadding), root.y + levelHeight, root);
+    // treeHeight = nodeSize*2 + nodePadding*3;
+    // leftBound = -(1.5 * nodeSize + 2 * nodePadding);
+    // rightBound = -leftBound;
+    root = new Node(null, 0., nodePadding + nodeSize/2.);
+    root.left = new Node(root);
+    root.right = new Node(root);
+    root.right.right = new Node(root.right);
+    root.calculateTreeWidth();
+    root.adjustPosition(0., 0., 'root');
     myCamera = new Camera();
 }
 
 function draw() {
     background(160);
     root.display();
-    myCamera.line(leftBound, treeHeight, rightBound, 0);
-    myCamera.line(leftBound, 0, rightBound, treeHeight);
+    // myCamera.line(leftBound, treeHeight, rightBound, 0);
+    // myCamera.line(leftBound, 0, rightBound, treeHeight);
 }
 
 class Node {
-    constructor(x, y, parent) {
+    constructor(parent, x = 0., y = 0.) {
         this.val = 0;
         this.left = null;
         this.right = null;
@@ -51,8 +54,37 @@ class Node {
 
     // Calculate and adjust the sizes and positions of this node and the subtree under it
     // Returns a number indicating the width of the subtree
-    adjustPosition(baseX, depth, rightBound) {
+    // branchDirection: 'left' | 'right' | 'root'
+    adjustPosition(baseX, depth, branchDirection) {
         // TODO: perform dfs to accumulation the width of the the entire subtree and update the postions of the nodes
+        if (branchDirection == 'left') {
+            this.x = baseX - this.width/2.;
+            leftBound = Math.min(leftBound, baseX - this.width);
+        } else if (branchDirection == 'right') {
+            this.x = baseX + this.width/2.;
+            rightBound = Math.max(rightBound, baseX + this.width);
+        }
+        this.y = depth + levelHeight;
+        treeHeight = Math.max(treeHeight, this.y + levelHeight);
+        if (this.left != null) {
+            this.left.adjustPosition(this.x, this.y, 'left');
+        }
+        if (this.right != null) {
+            this.right.adjustPosition(this.x, this.y, 'right');
+        }
+    }
+
+    // Calculate subtree width using dfs
+    calculateTreeWidth() {
+        let leftSubtreeWidth = nodeSize + 2 * nodePadding;
+        let rightSubtreeWidth = leftSubtreeWidth;
+        if (this.left != null) {
+            leftSubtreeWidth = this.left.calculateTreeWidth();
+        }
+        if (this.right != null) {
+            rightSubtreeWidth = this.right.calculateTreeWidth();
+        }
+        this.width = leftSubtreeWidth + rightSubtreeWidth;
         return this.width;
     }
 
