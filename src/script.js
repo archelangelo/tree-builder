@@ -4,14 +4,13 @@ var myCamera;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(255);
+    background(160);
     nodeSize = 10.;
     nodePadding = 4.;
     levelHeight = nodeSize + 2*nodePadding;
     treeHeight = nodeSize*2 + nodePadding*3;
     leftBound = -(1.5 * nodeSize + 2 * nodePadding);
     rightBound = -leftBound;
-    rightBound = 1.;
     root = new Node(0., nodePadding + nodeSize/2., null);
     root.left = new Node(root.x - (nodeSize + nodePadding), root.y + levelHeight, root);
     root.right = new Node(root.x + (nodeSize + nodePadding), root.y + levelHeight, root);
@@ -19,8 +18,10 @@ function setup() {
 }
 
 function draw() {
-    background(255);
+    background(160);
     root.display();
+    myCamera.line(leftBound, treeHeight, rightBound, 0);
+    myCamera.line(leftBound, 0, rightBound, treeHeight);
 }
 
 class Node {
