@@ -18,11 +18,11 @@ function setup() {
     root.calculateTreeWidth();
     root.adjustPosition(0., 0., 'root');
     myCamera = new Camera();
+    root.display();
 }
 
 function draw() {
-    background(160);
-    root.display();
+    // background(160);
     // myCamera.line(leftBound, treeHeight, rightBound, 0);
     // myCamera.line(leftBound, 0, rightBound, treeHeight);
 }
