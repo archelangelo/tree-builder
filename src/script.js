@@ -11,10 +11,10 @@ function setup() {
     // treeHeight = nodeSize*2 + nodePadding*3;
     // leftBound = -(1.5 * nodeSize + 2 * nodePadding);
     // rightBound = -leftBound;
-    root = new Node(null, 0., nodePadding + nodeSize/2.);
-    root.left = new Node(root);
-    root.right = new Node(root);
-    root.right.right = new Node(root.right);
+    root = new Node(0., nodePadding + nodeSize/2.);
+    root.left = new Node();
+    root.right = new Node();
+    root.right.right = new Node();
     root.calculateTreeWidth();
     root.adjustPosition(0., 0., 'root');
     myCamera = new Camera();
@@ -28,26 +28,25 @@ function draw() {
 }
 
 class Node {
-    constructor(parent, x = 0., y = 0.) {
+    constructor(x = 0., y = 0.) {
         this.val = 0;
         this.left = null;
         this.right = null;
-        this.parent = parent;
         this.x = x;
         this.y = y;
         this.width = nodeSize;
     }
 
     // Display the tree staring from this node with dfs
-    display() {
+    display(parent = null) {
         if (this.left != null) {
-            this.left.display();
+            this.left.display(this);
         }
         if (this.right != null) {
-            this.right.display();
+            this.right.display(this);
         }
-        if (this.parent != null) {
-            myCamera.line(this.x, this.y, this.parent.x, this.parent.y);
+        if (parent != null) {
+            myCamera.line(this.x, this.y, parent.x, parent.y);
         }
         myCamera.ellipse(this.x, this.y, nodeSize, nodeSize);
     }
