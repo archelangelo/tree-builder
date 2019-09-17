@@ -48,7 +48,7 @@ class Node {
         if (parent != null) {
             myCamera.line(this.x, this.y, parent.x, parent.y);
         }
-        myCamera.ellipse(this.x, this.y, nodeSize, nodeSize);
+        myCamera.ellipse(this.x, this.y, nodeSize, nodeSize, this.val, this.onClick);
     }
 
     // Calculate and adjust the sizes and positions of this node and the subtree under it
@@ -89,6 +89,7 @@ class Node {
 
     // Click trigger
     onClick() {
+        console.log('Node got clicked!!!!')
         // TODO: prompts the user to set the value, add children or delete
     }
 }
@@ -110,13 +111,16 @@ class Camera {
     }
 
     // Draw an ellipse
-    ellipse(x, y, w, h) {
+    ellipse(x, y, w, h, val, onClick) {
         this.updateScale();
         let x_p = x * this.scale + this.x;
         let y_p = y * this.scale + this.y;
         let w_p = w * this.scale;
         let h_p = h * this.scale;
-        ellipse(x_p, y_p, w_p, h_p);
+        uxEllipse(x_p, y_p, w_p, h_p).uxEvent('click', onClick);
+        textAlign(CENTER, CENTER);
+        textSize(2 * this.scale);
+        text(`${val}`, x_p, y_p);
     }
 
     // Draw a line
