@@ -1,6 +1,7 @@
-var nodeSize, nodePadding, levelHeight, treeHeight = 0., leftBound = 0., rightBound = 0.;
-var root;
-var myCamera;
+let nodeSize, nodePadding, levelHeight, treeHeight = 0., leftBound = 0., rightBound = 0.;
+let root;
+let myCamera;
+let fontSize = 5;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -35,6 +36,7 @@ class Node {
         this.x = x;
         this.y = y;
         this.width = nodeSize;
+        this.ellipse = null;
     }
 
     // Display the tree staring from this node with dfs
@@ -48,7 +50,12 @@ class Node {
         if (parent != null) {
             myCamera.line(this.x, this.y, parent.x, parent.y);
         }
-        myCamera.ellipse(this.x, this.y, nodeSize, nodeSize, this.val, this.onClick);
+        if (this.ellipse == null) {
+            this.ellipse = myCamera.ellipse(this.x, this.y, nodeSize, nodeSize);
+            this.ellipse.uxEvent('click', this.onClick);
+        }
+        this.ellipse.uxRender();
+        myCamera.text(`${this.val}`, this.x, this.y);
     }
 
     // Calculate and adjust the sizes and positions of this node and the subtree under it
@@ -111,16 +118,23 @@ class Camera {
     }
 
     // Draw an ellipse
-    ellipse(x, y, w, h, val, onClick) {
+    ellipse(x, y, w, h) {
         this.updateScale();
         let x_p = x * this.scale + this.x;
         let y_p = y * this.scale + this.y;
         let w_p = w * this.scale;
         let h_p = h * this.scale;
-        uxEllipse(x_p, y_p, w_p, h_p).uxEvent('click', onClick);
-        textAlign(CENTER, CENTER);
-        textSize(2 * this.scale);
-        text(`${val}`, x_p, y_p);
+        return uxEllipse(x_p, y_p, w_p, h_p);
+    }
+
+    // Display text
+    text(t, x, y) {
+        this.updateScale();
+        let x_p = x * this.scale + this.x;
+        let y_p = y * this.scale + this.y;
+        // textAlign(CENTER, CENTER);
+        // textSize(fontSize * this.scale);
+        text(t, x_p, y_p);
     }
 
     // Draw a line
