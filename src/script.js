@@ -12,14 +12,16 @@ function setup() {
     // treeHeight = nodeSize*2 + nodePadding*3;
     // leftBound = -(1.5 * nodeSize + 2 * nodePadding);
     // rightBound = -leftBound;
-    root = new Node(0., nodePadding + nodeSize/2.);
-    root.left = new Node();
-    root.right = new Node();
-    root.right.right = new Node();
-    root.calculateTreeWidth();
-    root.adjustPosition(0., 0., 'root');
+    // root = new Node(0., 0., nodePadding + nodeSize/2.);
+    // root.left = new Node();
+    // root.right = new Node();
+    // root.right.right = new Node();
+    // root.calculateTreeWidth();
+    // root.adjustPosition(0., 0., 'root');
+    root = Node.deserialize("[1,2,3,null,null,4,5]");
     myCamera = new Camera();
     root.display();
+    console.log(Node.serialize(root));
 }
 
 function draw() {
@@ -29,8 +31,8 @@ function draw() {
 }
 
 class Node {
-    constructor(x = 0., y = 0.) {
-        this.val = 0;
+    constructor(val = 0., x = 0., y = 0.) {
+        this.val = val;
         this.left = null;
         this.right = null;
         this.x = x;
@@ -99,6 +101,72 @@ class Node {
         console.log('Node got clicked!!!!')
         // TODO: prompts the user to set the value, add children or delete
     }
+
+    // Serialize the tree into a string
+    static serialize(root) {
+        if (root == null) return "";
+        let ans = "[";
+        let queue = [];
+        let nodeNumber = 0;
+        queue.push(root);
+        nodeNumber++;
+        while (nodeNumber > 0) {
+            let p = queue[0];
+            queue.shift();
+            if (p == null) {
+                ans += "null";
+            } else {
+                nodeNumber--;
+                ans += p.val.toString();
+                queue.push(p.left);
+                if (p.left != null) {
+                    nodeNumber++;
+                }
+                queue.push(p.right);
+                if (p.right != null) {
+                    nodeNumber++;
+                }
+            }
+            if (nodeNumber > 0) {
+                ans += ",";
+            }
+        }
+        ans += "]";
+        // console.log(ans);
+        return ans;
+    }
+
+    static deserialize(data) {
+        let queue = [];
+        let valArr = data.substring(1, data.length-1).split(",");
+        // console.log(valArr);
+        let root;
+        if (valArr.length > 0 && !isNaN(valArr[0]) && valArr[0] != "") {
+            root = new Node(valArr[0].toString());
+        } else {
+            return null;
+        }
+        queue.push(root);
+        valArr.shift();
+        while (valArr.length > 0) {
+            let p = queue[0];
+            queue.shift();
+            if (valArr[0] != "null") {
+                p.left = new Node(Number(valArr[0]));
+                queue.push(p.left);
+            }
+            valArr.shift();
+            if (valArr.length > 0 && valArr[0] != "null") {
+                p.right = new Node(Number(valArr[0]));
+                queue.push(p.right);
+            }
+            valArr.shift();
+        }
+        root.calculateTreeWidth();
+        root.adjustPosition(0., 0., 'root');
+        return root;
+    }
+    
 }
 
 // Draw objects through the lens of this camera
