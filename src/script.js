@@ -54,7 +54,9 @@ class Node {
         }
         if (this.ellipse == null) {
             this.ellipse = myCamera.ellipse(this.x, this.y, nodeSize, nodeSize);
-            this.ellipse.uxEvent('click', this.onClick);
+            this.ellipse.uxEvent('click', () => {
+                this.onClick(this);
+            });
         }
         this.ellipse.uxRender();
         myCamera.text(`${this.val}`, this.x, this.y);
@@ -97,8 +99,19 @@ class Node {
     }
 
     // Click trigger
-    onClick() {
+    onClick(node) {
         console.log('Node got clicked!!!!')
+        let tmpVal = prompt('Type new value for this node');
+        let flag = false;
+        if(tmpVal) {
+            flag = confirm('Are you sure?');
+        }
+        console.log(tmpVal, flag);
+        if (flag) {
+            node.val = tmpVal;
+            node.display();
+            console.log("changing value")
+        }
         // TODO: prompts the user to set the value, add children or delete
     }
 
@@ -200,8 +213,9 @@ class Camera {
         this.updateScale();
         let x_p = x * this.scale + this.x;
         let y_p = y * this.scale + this.y;
-        // textAlign(CENTER, CENTER);
-        // textSize(fontSize * this.scale);
+        textAlign(CENTER, CENTER);
+        textSize(fontSize * this.scale);
+        fill(0, 102, 153);
         text(t, x_p, y_p);
     }
 
