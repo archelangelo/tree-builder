@@ -2,10 +2,16 @@ let nodeSize, nodePadding, levelHeight, treeHeight = 0., leftBound = 0., rightBo
 let root;
 let myCamera;
 let fontSize = 5;
+let textBox, genButton;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     background(160);
+    textBox = createInput();
+    textBox.position(20, 65);
+    genButton = createButton('submit');
+    genButton.position(textBox.x + textBox.width, 65);
+    genButton.mousePressed(generateTree);
     nodeSize = 10.;
     nodePadding = 4.;
     levelHeight = nodeSize + 2*nodePadding;
@@ -21,13 +27,18 @@ function setup() {
     root = Node.deserialize("[1,2,3,null,null,4,5]");
     myCamera = new Camera();
     root.display();
-    console.log(Node.serialize(root));
 }
 
 function draw() {
     // background(160);
     // myCamera.line(leftBound, treeHeight, rightBound, 0);
     // myCamera.line(leftBound, 0, rightBound, treeHeight);
+}
+
+function generateTree() {
+    console.log(textBox.value());
+    root = Node.deserialize(textBox.value());
+    root.display();
 }
 
 class Node {
