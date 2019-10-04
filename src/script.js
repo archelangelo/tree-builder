@@ -25,6 +25,7 @@ function setup() {
     // root.calculateTreeWidth();
     // root.adjustPosition(0., 0., 'root');
     root = Node.deserialize("[1,2,3,null,null,4,5]");
+    textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
 }
@@ -123,7 +124,8 @@ class Node {
         if (flag) {
             node.val = tmpVal;
             node.display();
-            console.log("changing value")
+            console.log("changing value");
+            textBox.elt.value = Node.serialize(root);
         }
         // TODO: prompts the user to set the value, add children or delete
     }
