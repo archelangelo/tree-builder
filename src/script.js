@@ -30,13 +30,15 @@ function setup() {
 }
 
 function draw() {
-    // background(160);
+    background(160);
+    root.display();
     // myCamera.line(leftBound, treeHeight, rightBound, 0);
     // myCamera.line(leftBound, 0, rightBound, treeHeight);
 }
 
 function generateTree() {
     console.log(textBox.value());
+    uxRefreshAll();
     root = Node.deserialize(textBox.value());
     root.display();
 }
