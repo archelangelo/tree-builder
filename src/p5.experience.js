@@ -227,8 +227,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
             this.inputObject = (input) => {
   
-              if (checkRectHover(this.x, this.y, this.w, this.h, mouseX, mouseY) && input === this.kindOfInput) {
-                this.callback();
+              if (checkRectHover(this.x, this.y, this.w, this.h, mouseX, mouseY)) {
+                this.callback(input);
               }
   
             }
@@ -272,8 +272,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
             this.inputObject = (input) => {
   
-              if (checkRectHover(this.x, this.y, this.s, this.s, mouseX, mouseY) && input === this.kindOfInput) {
-                this.callback();
+              if (checkRectHover(this.x, this.y, this.s, this.s, mouseX, mouseY)) {
+                this.callback(input);
               }
   
             }
@@ -313,8 +313,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
             this.inputObject = (input) => {
   
-              if (checkTriangleHover(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, mouseX, mouseY) && input === this.kindOfInput) {
-                this.callback();
+              if (checkTriangleHover(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, mouseX, mouseY)) {
+                this.callback(input);
               }
   
             }
@@ -342,7 +342,7 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
               if (this.uxNoFillState === false) {
                 fill(this.uxFill);
               } else {
-                noFill()
+                noFill();
               }
   
               if (this.uxEllipseModeState === 'corner') {
@@ -357,8 +357,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
             this.inputObject = (input) => {
   
-              if (checkCircleHover(this.x, this.y, this.d, mouseX, mouseY) && input === this.kindOfInput) {
-                this.callback();
+              if (checkCircleHover(this.x, this.y, this.d, mouseX, mouseY)) {
+                this.callback(input);
               }
   
             }
@@ -402,8 +402,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
             this.inputObject = (input) => {
   
-              if (checkEllipseHover(this.x, this.y, this.w, this.h, mouseX, mouseY) && input === this.kindOfInput) {
-                this.callback();
+              if (checkEllipseHover(this.x, this.y, this.w, this.h, mouseX, mouseY)) {
+                this.callback(input);
               }
   
             }
@@ -426,8 +426,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
             this.inputObject = (input) => {
   
-              if (checkRectHover(this.x, this.y, this.w, this.h, mouseX, mouseY) && input === this.kindOfInput) {
-                this.callback();
+              if (checkRectHover(this.x, this.y, this.w, this.h, mouseX, mouseY)) {
+                this.callback(input);
               }
   
             }
@@ -435,7 +435,7 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
         //This lines push the render and input-functions to the specific array
   
-        renderUxObjects.push([this.renderShape, this.UxID]);
+        // renderUxObjects.push([this.renderShape, this.UxID]);
   
         if (this.kindOfInput != 'none') {
           inputUxObjects.push([this.inputObject, this.UxID]);
@@ -445,8 +445,7 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
       //This method can be called by the user in setup() (sets input for the specific uxElement)
   
-      uxEvent(kindOfInput, callback) {
-        this.kindOfInput = kindOfInput; // press, click, hover
+      uxEvent(callback) {
         this.callback = callback;
       }
   
@@ -751,7 +750,7 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
       uxRender() {
         if (this.kindOfRender === 'intern') {
-  
+
           for (let i in renderUxObjects) {
             if (renderUxObjects[i][1] === this.UxID) {
               renderUxObjects.splice(i, 1);
@@ -764,6 +763,17 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
         //Now draw at "new" place
         this.renderShape();
   
+      }
+
+      uxRemove() {
+        if (this.inputObject != null) {
+          for (let i in inputUxObjects) {
+            if (inputUxObjects[i][1] === this.UxID) {
+              inputUxObjects.splice(i, 1);
+            }
+          }
+        }
+        this.inputObject = null;
       }
   
     }

@@ -53,23 +53,75 @@ class Node {
         this.y = y;
         this.width = nodeSize;
         this.ellipse = null;
+        this.leftEllipse = null;
+        this.rightEllipse = null;
     }
 
     // Display the tree staring from this node with dfs
     display(parent = null) {
         if (this.left != null) {
             this.left.display(this);
+        } else {
+            if (this.leftEllipse == null) {
+                this.leftEllipse = myCamera.ellipse(this.x - nodeSize, this.y + levelHeight, nodeSize, nodeSize);
+                this.leftEllipse.visable = false;
+                this.leftEllipse.uxEvent((input) => {
+                    switch (input) {
+                        case 'click':
+                            this.leftEllipse.uxRemove();
+                            this.leftEllipse = null;
+                            this.left = new Node();
+                            Node.updatePositions(root);
+                            this.left.onClick(this.left);
+                            break;
+                        case 'hover':
+                            console.log('hovering.');
+                            this.leftEllipse.visable = true;
+                    }
+                });
+            }
+            if (this.leftEllipse.visable) {
+                myCamera.line(this.x - nodeSize, this.y + levelHeight, this.x, this.y);
+                this.leftEllipse.uxRender();
+                this.leftEllipse.visable = false;
+            }
         }
         if (this.right != null) {
             this.right.display(this);
+        } else {
+            if (this.rightEllipse == null) {
+                this.rightEllipse = myCamera.ellipse(this.x + nodeSize, this.y + levelHeight, nodeSize, nodeSize);
+                this.rightEllipse.visable = false;
+                this.rightEllipse.uxEvent((input) => {
+                    switch (input) {
+                        case 'click':
+                            this.rightEllipse.uxRemove();
+                            this.rightEllipse = null;
+                            this.right = new Node();
+                            Node.updatePositions(root);
+                            this.right.onClick(this.right);
+                            break;
+                        case 'hover':
+                            this.rightEllipse.visable = true;
+                    }
+                });
+            }
+            if (this.rightEllipse.visable) {
+                myCamera.line(this.x + nodeSize, this.y + levelHeight, this.x, this.y);
+                this.rightEllipse.uxRender();
+                this.rightEllipse.visable = false;
+            }
         }
         if (parent != null) {
             myCamera.line(this.x, this.y, parent.x, parent.y);
         }
         if (this.ellipse == null) {
             this.ellipse = myCamera.ellipse(this.x, this.y, nodeSize, nodeSize);
-            this.ellipse.uxEvent('click', () => {
-                this.onClick(this);
+            this.ellipse.uxEvent((input) => {
+                switch (input) {
+                    case 'click':
+                        this.onClick(this);
+                }
             });
         }
         this.ellipse.uxRender();
@@ -79,22 +131,34 @@ class Node {
     // Calculate and adjust the sizes and positions of this node and the subtree under it
     // Returns a number indicating the width of the subtree
     // branchDirection: 'left' | 'right' | 'root'
-    adjustPosition(baseX, depth, branchDirection) {
+    adjustPosition(baseX = 0., depth = 0., branchDirection = 'root') {
         // TODO: perform dfs to accumulation the width of the the entire subtree and update the postions of the nodes
-        if (branchDirection == 'left') {
+        if (branchDirection === 'left') {
             this.x = baseX - this.width/2.;
             leftBound = Math.min(leftBound, baseX - this.width);
-        } else if (branchDirection == 'right') {
+        } else if (branchDirection === 'right') {
             this.x = baseX + this.width/2.;
             rightBound = Math.max(rightBound, baseX + this.width);
+        } else {
+            this.x = baseX;
         }
         this.y = depth + levelHeight;
-        treeHeight = Math.max(treeHeight, this.y + levelHeight);
+        treeHeight = Math.max(treeHeight, this.y + levelHeight * 2);
         if (this.left != null) {
             this.left.adjustPosition(this.x, this.y, 'left');
         }
         if (this.right != null) {
             this.right.adjustPosition(this.x, this.y, 'right');
+        }
+        // Update all the object positions
+        if (this.ellipse != null) {
+            [this.ellipse.x, this.ellipse.y, this.ellipse.w, this.ellipse.h] = myCamera.transform(this.x, this.y, nodeSize, nodeSize);
+        }
+        if (this.leftEllipse != null) {
+            [this.leftEllipse.x, this.leftEllipse.y, this.leftEllipse.w, this.leftEllipse.h] = myCamera.transform(this.x - nodeSize, this.y + levelHeight, nodeSize, nodeSize);
+        }
+        if (this.rightEllipse != null) {
+            [this.rightEllipse.x, this.rightEllipse.y, this.rightEllipse.w, this.rightEllipse.h] = myCamera.transform(this.x + nodeSize, this.y + levelHeight, nodeSize, nodeSize);
         }
     }
 
@@ -190,8 +254,13 @@ class Node {
             }
             valArr.shift();
         }
+        Node.updatePositions(root);
+        return root;
+    }
+
+    static updatePositions(root) {
         root.calculateTreeWidth();
-        root.adjustPosition(0., 0., 'root');
+        root.adjustPosition();
         return root;
     }
     
@@ -242,5 +311,10 @@ class Camera {
         let x2_p = x2 * this.scale + this.x;
         let y2_p = y2 * this.scale + this.y;
         line(x1_p, y1_p, x2_p, y2_p);
+    }
+
+    transform(x, y, w, h) {
+        this.updateScale();
+        return [x * this.scale + this.x, y * this.scale + this.y, w * this.scale, h * this.scale];
     }
 }
