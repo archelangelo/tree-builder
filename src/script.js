@@ -55,10 +55,15 @@ class Node {
         this.ellipse = null;
         this.leftEllipse = null;
         this.rightEllipse = null;
+        this.posUpdated = false;
     }
 
     // Display the tree staring from this node with dfs
     display(parent = null) {
+        if (this.posUpdated) {
+            this.updateUxObjectPos();
+            this.posUpdated = false;
+        }
         if (this.left != null) {
             this.left.display(this);
         } else {
@@ -75,7 +80,7 @@ class Node {
                             this.left.onClick(this.left);
                             break;
                         case 'hover':
-                            console.log('hovering.');
+                            // console.log('hovering.');
                             this.leftEllipse.visable = true;
                     }
                 });
@@ -133,10 +138,11 @@ class Node {
     // branchDirection: 'left' | 'right' | 'root'
     adjustPosition(baseX = 0., depth = 0., branchDirection = 'root') {
         // TODO: perform dfs to accumulation the width of the the entire subtree and update the postions of the nodes
-        if (branchDirection === 'left') {
+        let leftWidth = Node.getWidth(this.left), rightWidth = Node.getWidth(this.right);
+        if (branchDirection == 'left') {
             this.x = baseX - this.width/2.;
             leftBound = Math.min(leftBound, baseX - this.width);
-        } else if (branchDirection === 'right') {
+        } else if (branchDirection == 'right') {
             this.x = baseX + this.width/2.;
             rightBound = Math.max(rightBound, baseX + this.width);
         } else {
@@ -145,13 +151,18 @@ class Node {
         this.y = depth + levelHeight;
         treeHeight = Math.max(treeHeight, this.y + levelHeight * 2);
         if (this.left != null) {
-            this.left.adjustPosition(this.x, this.y, 'left');
+            this.left.adjustPosition(this.x + (leftWidth - rightWidth) / 2., this.y, 'left');
         }
         if (this.right != null) {
-            this.right.adjustPosition(this.x, this.y, 'right');
+            this.right.adjustPosition(this.x + (leftWidth - rightWidth) / 2., this.y, 'right');
         }
-        // Update all the object positions
+        this.posUpdated = true;
+    }
+
+    // Update all the object positions
+    updateUxObjectPos() {
         if (this.ellipse != null) {
+            console.log('At node id: ' + this.val + '. leftBound = ' + leftBound + 'rightBoud = ' + rightBound);
             [this.ellipse.x, this.ellipse.y, this.ellipse.w, this.ellipse.h] = myCamera.transform(this.x, this.y, nodeSize, nodeSize);
         }
         if (this.leftEllipse != null) {
@@ -203,8 +214,7 @@ class Node {
         queue.push(root);
         nodeNumber++;
         while (nodeNumber > 0) {
-            let p = queue[0];
-            queue.shift();
+            let p = queue.shift();
             if (p == null) {
                 ans += "null";
             } else {
@@ -262,6 +272,14 @@ class Node {
         root.calculateTreeWidth();
         root.adjustPosition();
         return root;
+    }
+
+    static getWidth(node) {
+        if (node == null) {
+            return nodeSize + 2 * nodePadding;
+        } else {
+            return node.width;
+        }
     }
     
 }
