@@ -251,8 +251,7 @@ class Node {
         queue.push(root);
         valArr.shift();
         while (valArr.length > 0) {
-            let p = queue[0];
-            queue.shift();
+            let p = queue.shift();
             if (valArr[0] != "null") {
                 p.left = new Node(Number(valArr[0]));
                 queue.push(p.left);
