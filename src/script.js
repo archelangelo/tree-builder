@@ -1,40 +1,38 @@
-let nodeSize, nodePadding, levelHeight, treeHeight = 0., leftBound = 0., rightBound = 0.;
+let canvasWidth = 100., canvasHeight = 80.;
+let nodeSize = 10., nodePadding = 2., levelHeight = 12., treeHeight = 0., leftBound = 0., rightBound = 0.;
+let backgroundColor = 200, fontSize = 5;
 let root;
 let myCamera;
-let fontSize = 5;
 let textBox, genButton;
+let myCanvas;
+let nodeModal, nodeModalDoneBtn;
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
-    background(160);
+    myCanvas = createCanvas(windowWidth * 0.8, windowHeight * 0.98);
+    myCanvas.center('horizontal');
+    background(backgroundColor);
     textBox = createInput();
-    textBox.position(20, 65);
+    textBox.position(myCanvas.x + 20, 65);
     genButton = createButton('submit');
     genButton.position(textBox.x + textBox.width, 65);
     genButton.mousePressed(generateTree);
-    nodeSize = 10.;
-    nodePadding = 4.;
-    levelHeight = nodeSize + 2*nodePadding;
-    // treeHeight = nodeSize*2 + nodePadding*3;
-    // leftBound = -(1.5 * nodeSize + 2 * nodePadding);
-    // rightBound = -leftBound;
-    // root = new Node(0., 0., nodePadding + nodeSize/2.);
-    // root.left = new Node();
-    // root.right = new Node();
-    // root.right.right = new Node();
-    // root.calculateTreeWidth();
-    // root.adjustPosition(0., 0., 'root');
-    root = Node.deserialize("[1,2,3,null,null,4,5]");
+
+    // Setup node modal behaviors
+    nodeModal = document.getElementById('nodeModal');
+    nodeModalDoneBtn = document.getElementById('nodeModalDoneBtn');
+    nodeModalDoneBtn.onclick = function() {
+        nodeModal.style.display = 'none';
+    }
+
+    root = Node.deserialize('[1,2,3,null,null,4,5]');
     textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
 }
 
 function draw() {
-    background(160);
+    background(backgroundColor);
     root.display();
-    // myCamera.line(leftBound, treeHeight, rightBound, 0);
-    // myCamera.line(leftBound, 0, rightBound, treeHeight);
 }
 
 function generateTree() {
@@ -77,10 +75,9 @@ class Node {
                             this.leftEllipse = null;
                             this.left = new Node();
                             Node.updatePositions(root);
-                            this.left.onClick(this.left);
+                            this.left.onClick();
                             break;
                         case 'hover':
-                            // console.log('hovering.');
                             this.leftEllipse.visable = true;
                     }
                 });
@@ -104,7 +101,7 @@ class Node {
                             this.rightEllipse = null;
                             this.right = new Node();
                             Node.updatePositions(root);
-                            this.right.onClick(this.right);
+                            this.right.onClick();
                             break;
                         case 'hover':
                             this.rightEllipse.visable = true;
@@ -125,7 +122,7 @@ class Node {
             this.ellipse.uxEvent((input) => {
                 switch (input) {
                     case 'click':
-                        this.onClick(this);
+                        this.onClick();
                 }
             });
         }
@@ -188,20 +185,21 @@ class Node {
     }
 
     // Click trigger
-    onClick(node) {
-        console.log('Node got clicked!!!!')
-        let tmpVal = prompt('Type new value for this node');
-        let flag = false;
-        if(tmpVal) {
-            flag = confirm('Are you sure?');
-        }
-        console.log(tmpVal, flag);
-        if (flag) {
-            node.val = tmpVal;
-            node.display();
-            console.log("changing value");
-            textBox.elt.value = Node.serialize(root);
-        }
+    onClick() {
+        // console.log('Node got clicked!!!!')
+        // let tmpVal = prompt('Type new value for this node');
+        // let flag = false;
+        // if(tmpVal) {
+        //     flag = confirm('Are you sure?');
+        // }
+        // console.log(tmpVal, flag);
+        nodeModal.style.display = 'block';
+        // if (flag) {
+        //     this.val = tmpVal;
+        //     this.display();
+        //     console.log("changing value");
+        //     textBox.elt.value = Node.serialize(root);
+        // }
         // TODO: prompts the user to set the value, add children or delete
     }
 
