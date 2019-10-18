@@ -1,11 +1,12 @@
 let canvasWidth = 100., canvasHeight = 80.;
-let nodeSize = 10., nodePadding = 2., levelHeight = 12., treeHeight = 0., leftBound = 0., rightBound = 0.;
+let nodeSize = 10., nodePadding = 3., levelHeight = 12., treeHeight = 0., leftBound = 0., rightBound = 0.;
 let backgroundColor = 200, fontSize = 5;
 let root;
 let myCamera;
 let textBox, genButton;
 let myCanvas;
-let nodeModal, nodeModalDoneBtn;
+let nodeModal, nodeModalDoneBtn, nodeModalInput, nodeModalDelBtn;
+let currentNode;
 
 function setup() {
     myCanvas = createCanvas(windowWidth * 0.8, windowHeight * 0.98);
@@ -20,14 +21,30 @@ function setup() {
     // Setup node modal behaviors
     nodeModal = document.getElementById('nodeModal');
     nodeModalDoneBtn = document.getElementById('nodeModalDoneBtn');
-    nodeModalDoneBtn.onclick = function() {
-        nodeModal.style.display = 'none';
-    }
+    nodeModalInput = document.getElementById('nodeModalInput');
+    nodeModalDelBtn = document.getElementById('nodeModalDelBtn');
+    nodeModalDoneBtn.onclick = modalEditorDone;
+    nodeModalDelBtn.onclick = deleteCurrentNode;
 
     root = Node.deserialize('[1,2,3,null,null,4,5]');
     textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
+}
+
+function modalEditorDone() {
+    currentNode.val = Number(nodeModalInput.value);
+    textBox.elt.value = Node.serialize(root);
+    nodeModal.style.display = 'none';
+}
+
+function deleteCurrentNode() {
+    if (currentNode === root) {
+        return;
+    }
+    Node.deleteNode(currentNode);
+    textBox.elt.value = Node.serialize(root);
+    nodeModal.style.display = 'none';
 }
 
 function draw() {
@@ -193,6 +210,13 @@ class Node {
         //     flag = confirm('Are you sure?');
         // }
         // console.log(tmpVal, flag);
+        nodeModalInput.value = this.val;
+        currentNode = this;
+        if (this === root) {
+            nodeModalDelBtn.disabled = true;
+        } else {
+            nodeModalDelBtn.disabled = false;
+        }
         nodeModal.style.display = 'block';
         // if (flag) {
         //     this.val = tmpVal;
@@ -276,6 +300,21 @@ class Node {
             return nodeSize + 2 * nodePadding;
         } else {
             return node.width;
+        }
+    }
+
+    static deleteNode(nodeToDel, node = root) {
+        if (nodeToDel === node.right) {
+            node.right = null;
+        } else if (nodeToDel === node.left) {
+            node.left = null;
+        } else {
+            if (node.left != null) {
+                Node.deleteNode(nodeToDel, node.left);
+            }
+            if (node.right != null) {
+                Node.deleteNode(nodeToDel, node.right);
+            }
         }
     }
     
