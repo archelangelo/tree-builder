@@ -1,6 +1,6 @@
 let canvasWidth = 100., canvasHeight = 80.;
 let nodeSize = 10., nodePadding = 3., levelHeight = 12., treeHeight = 0., leftBound = 0., rightBound = 0.;
-let backgroundColor = 200, fontSize = 5;
+let backgroundColor = 245, fontSize = 5;
 let root;
 let myCamera;
 let textBox, genButton;
@@ -36,6 +36,7 @@ function modalEditorDone() {
     currentNode.val = Number(nodeModalInput.value);
     textBox.elt.value = Node.serialize(root);
     nodeModal.style.display = 'none';
+    uxDisable(false);
 }
 
 function deleteCurrentNode() {
@@ -45,6 +46,7 @@ function deleteCurrentNode() {
     Node.deleteNode(currentNode);
     textBox.elt.value = Node.serialize(root);
     nodeModal.style.display = 'none';
+    uxDisable(false);
 }
 
 function draw() {
@@ -217,6 +219,7 @@ class Node {
         } else {
             nodeModalDelBtn.disabled = false;
         }
+        uxDisable();
         nodeModal.style.display = 'block';
         // if (flag) {
         //     this.val = tmpVal;
