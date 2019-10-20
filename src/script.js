@@ -16,7 +16,7 @@ function setup() {
     textBox = createInput();
     textBox.position(myCanvas.x + 20, 65);
     genButton = createButton('submit');
-    genButton.position(textBox.x + textBox.width, 65);
+    genButton.position(textBox.x + textBox.width + 8, 65);
     genButton.mousePressed(generateTree);
 
     // Setup node modal behaviors
@@ -28,6 +28,7 @@ function setup() {
     nodeModalDelBtn.onclick = deleteCurrentNode;
 
     root = Node.deserialize('[1,2,3,null,7,4,5,null,null,6]');
+    genButton.elt.classList.add('button');
     textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
@@ -49,6 +50,14 @@ function deleteCurrentNode() {
     nodeModal.style.display = 'none';
     uxDisable(false);
 }
+
+// Close and cancel value change when the user clicks outside.
+window.onclick = function(event) {
+        if (event.target == nodeModal) {
+            nodeModal.style.display = "none";
+            uxDisable(false);
+        }
+    }
 
 function draw() {
     background(backgroundColor);
@@ -210,13 +219,6 @@ class Node {
 
     // Click trigger
     onClick() {
-        // console.log('Node got clicked!!!!')
-        // let tmpVal = prompt('Type new value for this node');
-        // let flag = false;
-        // if(tmpVal) {
-        //     flag = confirm('Are you sure?');
-        // }
-        // console.log(tmpVal, flag);
         nodeModalInput.value = this.val;
         currentNode = this;
         if (this === root) {
@@ -226,13 +228,8 @@ class Node {
         }
         uxDisable();
         nodeModal.style.display = 'block';
-        // if (flag) {
-        //     this.val = tmpVal;
-        //     this.display();
-        //     console.log("changing value");
-        //     textBox.elt.value = Node.serialize(root);
-        // }
-        // TODO: prompts the user to set the value, add children or delete
+        nodeModalInput.focus();
+        nodeModalInput.select();
     }
 
     // Serialize the tree into a string
