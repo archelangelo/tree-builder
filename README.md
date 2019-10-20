@@ -2,6 +2,8 @@
 
 Click and drag to build a binary tree data structure and export as text. Supporting **LeetCode**'s binary tree format.
 
+- Visit the [hosted site](http://tree-builder-host.s3-website.us-east-2.amazonaws.com/).
+
 ### Usage:
 
 - Click a node to change its value
