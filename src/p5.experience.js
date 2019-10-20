@@ -41,7 +41,8 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
     let uxRectModeState = 'corner';
     let uxEllipseMode = 'center';
-  
+    
+    let disabled = false; // Disable mouse events
   
   
   
@@ -84,7 +85,7 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
     p5.prototype.uxFill = function(a, b, c, d) {
       uxFillColor = processColorInput(a, b, c, d);
       uxNoFillState = false;
-  
+
     }
   
     //Set noFill Value
@@ -155,6 +156,9 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
         inputUxObjects = [];
     }
   
+    p5.prototype.uxDisable = function(_disabled = true) {
+        disabled = _disabled;
+    }
   
   
     /* This is the main class for the uxElement. The constructor is very extensive as it sets the input and rendering functions.
@@ -782,6 +786,7 @@ More Infos / Reference / Tutorials & ReadMe: github.com/loneboarder/p5.experienc
   
     p5.prototype.runApp = function() {
       renderApp();
+      if (disabled) return;
       mouseInput();
     }
   
