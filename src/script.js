@@ -1,6 +1,6 @@
 let canvasWidth = 100., canvasHeight = 80.;
-let nodeSize = 10., nodePadding = 3., levelHeight = 12., treeHeight = 0., leftBound = 0., rightBound = 0.;
-let backgroundColor = 245, fontSize = 5, lineColor = 100, lineWidth = 4;
+let nodeSize = 10., nodePadding = 3., levelHeight = 17.5, treeHeight = 0., leftBound = 0., rightBound = 0.;
+let backgroundColor = 245, fontSize = 5, lineColor = 100, lineWidth = .3;
 let nodeColor = 50, nodeFontColor = 255, nodeHoverColor = 90;
 let root;
 let myCamera;
@@ -27,7 +27,7 @@ function setup() {
     nodeModalDoneBtn.onclick = modalEditorDone;
     nodeModalDelBtn.onclick = deleteCurrentNode;
 
-    root = Node.deserialize('[1,2,3,null,null,4,5]');
+    root = Node.deserialize('[1,2,3,null,7,4,5,null,null,6]');
     textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
@@ -370,9 +370,9 @@ class Camera {
 
     // Draw a line
     line(x1, y1, x2, y2) {
-        stroke(lineColor);
-        strokeWeight(lineWidth);
         this.updateScale();
+        stroke(lineColor);
+        strokeWeight(lineWidth * this.scale);
         let x1_p = x1 * this.scale + this.x;
         let y1_p = y1 * this.scale + this.y;
         let x2_p = x2 * this.scale + this.x;
