@@ -1,6 +1,7 @@
 let canvasWidth = 100., canvasHeight = 80.;
-let nodeSize = 10., nodePadding = 3., levelHeight = 12., treeHeight = 0., leftBound = 0., rightBound = 0.;
-let backgroundColor = 245, fontSize = 5;
+let nodeSize = 10., nodePadding = 3., levelHeight = 17.5, treeHeight = 0., leftBound = 0., rightBound = 0.;
+let backgroundColor = 245, fontSize = 5, lineColor = 100, lineWidth = .3;
+let nodeColor = 50, nodeFontColor = 255, nodeHoverColor = 90;
 let root;
 let myCamera;
 let textBox, genButton;
@@ -15,7 +16,7 @@ function setup() {
     textBox = createInput();
     textBox.position(myCanvas.x + 20, 65);
     genButton = createButton('submit');
-    genButton.position(textBox.x + textBox.width, 65);
+    genButton.position(textBox.x + textBox.width + 8, 65);
     genButton.mousePressed(generateTree);
 
     // Setup node modal behaviors
@@ -26,7 +27,8 @@ function setup() {
     nodeModalDoneBtn.onclick = modalEditorDone;
     nodeModalDelBtn.onclick = deleteCurrentNode;
 
-    root = Node.deserialize('[1,2,3,null,null,4,5]');
+    root = Node.deserialize('[1,2,3,null,7,4,5,null,null,6]');
+    genButton.elt.classList.add('button');
     textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
@@ -48,6 +50,14 @@ function deleteCurrentNode() {
     nodeModal.style.display = 'none';
     uxDisable(false);
 }
+
+// Close and cancel value change when the user clicks outside.
+window.onclick = function(event) {
+        if (event.target == nodeModal) {
+            nodeModal.style.display = "none";
+            uxDisable(false);
+        }
+    }
 
 function draw() {
     background(backgroundColor);
@@ -85,7 +95,7 @@ class Node {
             this.left.display(this);
         } else {
             if (this.leftEllipse == null) {
-                this.leftEllipse = myCamera.ellipse(this.x - nodeSize, this.y + levelHeight, nodeSize, nodeSize);
+                this.leftEllipse = myCamera.ellipse(this.x - nodeSize, this.y + levelHeight, nodeSize, nodeSize, nodeHoverColor);
                 this.leftEllipse.visable = false;
                 this.leftEllipse.uxEvent((input) => {
                     switch (input) {
@@ -111,7 +121,7 @@ class Node {
             this.right.display(this);
         } else {
             if (this.rightEllipse == null) {
-                this.rightEllipse = myCamera.ellipse(this.x + nodeSize, this.y + levelHeight, nodeSize, nodeSize);
+                this.rightEllipse = myCamera.ellipse(this.x + nodeSize, this.y + levelHeight, nodeSize, nodeSize, nodeHoverColor);
                 this.rightEllipse.visable = false;
                 this.rightEllipse.uxEvent((input) => {
                     switch (input) {
@@ -142,10 +152,14 @@ class Node {
                 switch (input) {
                     case 'click':
                         this.onClick();
+                        break;
+                    case 'hover':
+                        this.ellipse.uxFill = nodeHoverColor;
                 }
             });
         }
         this.ellipse.uxRender();
+        this.ellipse.uxFill = nodeColor;
         myCamera.text(`${this.val}`, this.x, this.y);
     }
 
@@ -205,13 +219,6 @@ class Node {
 
     // Click trigger
     onClick() {
-        // console.log('Node got clicked!!!!')
-        // let tmpVal = prompt('Type new value for this node');
-        // let flag = false;
-        // if(tmpVal) {
-        //     flag = confirm('Are you sure?');
-        // }
-        // console.log(tmpVal, flag);
         nodeModalInput.value = this.val;
         currentNode = this;
         if (this === root) {
@@ -221,13 +228,8 @@ class Node {
         }
         uxDisable();
         nodeModal.style.display = 'block';
-        // if (flag) {
-        //     this.val = tmpVal;
-        //     this.display();
-        //     console.log("changing value");
-        //     textBox.elt.value = Node.serialize(root);
-        // }
-        // TODO: prompts the user to set the value, add children or delete
+        nodeModalInput.focus();
+        nodeModalInput.select();
     }
 
     // Serialize the tree into a string
@@ -340,8 +342,10 @@ class Camera {
     }
 
     // Draw an ellipse
-    ellipse(x, y, w, h) {
+    ellipse(x, y, w, h, color = nodeColor) {
         this.updateScale();
+        uxNoStroke();
+        uxFill(color);
         let x_p = x * this.scale + this.x;
         let y_p = y * this.scale + this.y;
         let w_p = w * this.scale;
@@ -350,19 +354,22 @@ class Camera {
     }
 
     // Display text
-    text(t, x, y) {
+    text(t, x, y, color = nodeFontColor) {
+        uxNoStroke();
+        fill(color);
         this.updateScale();
         let x_p = x * this.scale + this.x;
         let y_p = y * this.scale + this.y;
         textAlign(CENTER, CENTER);
         textSize(fontSize * this.scale);
-        fill(0, 102, 153);
         text(t, x_p, y_p);
     }
 
     // Draw a line
     line(x1, y1, x2, y2) {
         this.updateScale();
+        stroke(lineColor);
+        strokeWeight(lineWidth * this.scale);
         let x1_p = x1 * this.scale + this.x;
         let y1_p = y1 * this.scale + this.y;
         let x2_p = x2 * this.scale + this.x;

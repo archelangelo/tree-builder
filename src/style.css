@@ -13,10 +13,58 @@
 }
 
 .modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 20%;
-  font-family: Arial, Helvetica, sans-serif;
+    background-color: #fefefe;
+    margin: auto;
+    padding-top: 20px;
+    padding-right: 60px;
+    padding-bottom: 20px;
+    padding-left: 60px;
+    border: 1px solid #888;
+    width: 320px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+}
+
+input[type="number"] {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    width: auto;
+}
+
+input[type="text"] {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    width: auto;
+}
+
+.button {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    width: 80px;
+    background-color: #2b2b2b;
+    border: none;
+    color: white;
+    padding: 4px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button-1 {
+    background-color: #fc3d3d;
+}
+
+.modal-button-area {
+    position: relative;
+    right: 0px;
+    padding-top: 12px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    padding-left: 80px;
+}
+
+.divider{
+    width: 20px;
+    height: 1px;
+    display: inline-block;
 }
