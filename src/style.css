@@ -15,9 +15,9 @@
 .modal-content {
     background-color: #fefefe;
     margin: auto;
-    padding-top: 20px;
+    padding-top: 40px;
     padding-right: 60px;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
     padding-left: 60px;
     border: 1px solid #888;
     width: 320px;
@@ -50,8 +50,17 @@ input[type="text"] {
     display: inline-block;
 }
 
+.button:hover {
+    background-color: #545454;
+
+}
+
 .button-1 {
     background-color: #fc3d3d;
+}
+
+.button-1:hover {
+    background-color: #ff6464;
 }
 
 .modal-button-area {
@@ -59,7 +68,7 @@ input[type="text"] {
     right: 0px;
     padding-top: 12px;
     padding-right: 0px;
-    padding-bottom: 5px;
+    padding-bottom: 0px;
     padding-left: 80px;
 }
 
