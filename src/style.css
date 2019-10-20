@@ -63,6 +63,10 @@ input[type="text"] {
     background-color: #ff6464;
 }
 
+.button-1:disabled {
+    display: none;
+}
+
 .modal-button-area {
     position: relative;
     right: 0px;
