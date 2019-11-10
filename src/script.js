@@ -2,21 +2,24 @@ let canvasWidth = 100., canvasHeight = 80.;
 let nodeSize = 10., nodePadding = 3., levelHeight = 17.5, treeHeight = 0., leftBound = 0., rightBound = 0.;
 let backgroundColor = 245, fontSize = 5, lineColor = 100, lineWidth = .3;
 let nodeColor = 50, nodeFontColor = 255, nodeHoverColor = 90;
+let helpButtonSize = 25;
 let root;
 let myCamera;
 let textBox, genButton;
+let helpButton, helpBox;
 let myCanvas;
 let nodeModal, nodeModalDoneBtn, nodeModalInput, nodeModalDelBtn;
 let currentNode;
+const HELPTEXT = "- Click a node to change its value\n- Hover over an empty child's position and click to add a new node\n- Type in tree representation in text in the input field to generate a new tree\n- All updates are synchronized with the text field";
 
 function setup() {
-    myCanvas = createCanvas(windowWidth * 0.8, windowHeight * 0.98);
+    myCanvas = createCanvas(windowWidth * 0.98, windowHeight * 0.98);
     myCanvas.center('horizontal');
     background(backgroundColor);
     textBox = createInput();
-    textBox.position(myCanvas.x + 20, 65);
+    textBox.position(myCanvas.x + 20, 20);
     genButton = createButton('submit');
-    genButton.position(textBox.x + textBox.width + 8, 65);
+    genButton.position(textBox.x + textBox.width + 8, 20);
     genButton.mousePressed(generateTree);
 
     // Setup node modal behaviors
@@ -32,6 +35,17 @@ function setup() {
     textBox.elt.value = Node.serialize(root);
     myCamera = new Camera();
     root.display();
+
+    helpBox = new HelpBox;
+    uxNoStroke();
+    uxFill(nodeColor);
+    helpButton = uxEllipse(width - helpButtonSize, helpButtonSize, helpButtonSize, helpButtonSize);
+    helpButton.uxEvent((input) => {
+        if (input == "hover") {
+            helpBox.visible = true;
+        }
+    });
+    helpButton.uxRender();
 }
 
 function modalEditorDone() {
@@ -62,6 +76,12 @@ window.onclick = function(event) {
 function draw() {
     background(backgroundColor);
     root.display();
+    helpBox.show();
+    helpButton.uxRender();
+    textSize(16);
+    fill(nodeFontColor);
+    textAlign(CENTER, CENTER);
+    text("?", helpButton.x, helpButton.y);
 }
 
 function generateTree() {
@@ -380,5 +400,27 @@ class Camera {
     transform(x, y, w, h) {
         this.updateScale();
         return [x * this.scale + this.x, y * this.scale + this.y, w * this.scale, h * this.scale];
+    }
+}
+
+class HelpBox {
+    HelpBox() {
+        this.visible = false;
+    }
+    show() {
+        if (this.visible) {
+            let margin = 12, fontSize = 16;
+            let boxW = 500., boxH = margin * 2 + 6 * fontSize;
+            let bx = width - helpButtonSize - boxW;
+            let by = helpButtonSize;
+            fill(nodeColor);
+            noStroke();
+            rect(bx, by, boxW, boxH);
+            fill(nodeFontColor);
+            textSize(fontSize);
+            textAlign(LEFT, TOP);
+            text(HELPTEXT, bx + margin, by + margin, boxW - margin * 2);
+            this.visible = false;
+        }
     }
 }
